@@ -2,14 +2,27 @@
 <html>
 
 <head>
-    <title>Foto Printer</title>
+    <title>RPi Server</title>
 </head>
 
 <body>
-    <h1>Foto Printer</h1>
+    <h1>QL-500 Printer</h1>
     <form method="POST" action="" enctype="multipart/form-data">
-        <p><input type="file" name="file" accept="image/*"></p>
-        <p><input type="submit" value="PrintFoto"></p>
+        <p><input type="file" name="file" accept="image/*">
+
+        <label for="copies">Copies</label>
+        <input type="text" id="copies" name="copies"></p>
+
+        <p><label for="stag">Single Tag:</label>
+        <input type="text" id="stag" name="stag"></p>
+
+        <p><label for="tags">Labdoo Tags (Separated by;):</label>
+        <input type="text" id="tags" name="tags"></p>
+
+        <p><input type="submit" value="Print!"></p>
+    </form>
+
+    <br></br>
     </form>
 </body>
 

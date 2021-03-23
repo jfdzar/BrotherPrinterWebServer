@@ -4,7 +4,7 @@ import logging
 import os
 from PIL import Image, ImageDraw, ImageFont
 import cv2
-import numpy as np
+# import numpy as np
 
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ def print_label(img_file, model, printer):
     logging.error(error.decode('utf-8'))
 
 
-def create_label(file):
+def create_photo_label(file):
     """
     Given the full path a an image
     Resize it and convert it to black and white
@@ -59,6 +59,29 @@ def create_label(file):
     return img_file
 
 
+def create_txt_label(text):
+    try:
+        filename = "label.png"
+        img = Image.new('RGB', (554, 100), color=(255, 255, 255))
+
+        font_size = 70
+        if len(text) > 13:
+            font_size = 35
+
+        fnt = ImageFont.truetype(
+            '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', font_size)
+        d = ImageDraw.Draw(img)
+        d.text((10, 10), text, font=fnt, fill=(0, 0, 0))
+
+        img.save(filename)
+        return filename
+
+    except Exception as e:
+        logging.error("Error Reading Creating Label")
+        logging.error(e)
+        return ""
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -67,13 +90,39 @@ def index():
 @app.route('/', methods=['POST'])
 def upload_file():
     uploaded_file = request.files['file']
-    if uploaded_file.filename != '':
-        uploaded_file.save(uploaded_file.filename)
+    inputs = request.form.to_dict()
+    no_copies = 1
 
-        img_file = create_label(uploaded_file.filename)
+    for key in inputs:
+
+        # If a single tag is written print single tag
+        if key == 'stag':
+            if inputs[key] != "":
+                print("Printing Single Tag: ", inputs[key])
+                img_file = create_txt_label(inputs[key])
+                model = "QL-500"
+                printer = "/dev/usb/lp0"
+                print_label(img_file, model, printer)
+        
+        # If several labdoo tags are passed then print them
+        if key == 'tags':
+            if inputs[key] != "":
+                print("Printing Labdoo Tags: ", inputs[key])
+
+        if key == 'copies':
+            if inputs[key] != "":
+                no_copies = int(inputs[key])
+                print(no_copies)
+
+    # If File is uploaded print the Foto
+    if uploaded_file.filename != '':
+
+        uploaded_file.save(uploaded_file.filename)
+        img_file = create_photo_label(uploaded_file.filename)
         model = "QL-500"
         printer = "/dev/usb/lp0"
-        print_label(img_file, model, printer)
+        for i in range(0, no_copies):
+            print_label(img_file, model, printer)
 
         os.remove(uploaded_file.filename)
 
