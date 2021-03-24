@@ -246,6 +246,8 @@ def upload_file():
         # If several labdoo tags are passed then print them
         if key == 'tags':
             if inputs[key] != "":
+                model = "QL-500"
+                printer = "/dev/usb/lp0"
                 print("Printing Labdoo Tags: ", inputs[key])
                 labdoo_tags = inputs[key].split(';')
                 for tag in labdoo_tags:
