@@ -1,31 +1,39 @@
 from flask import Flask, render_template, request, redirect, url_for
-import subprocess
 import logging
 import os
 from PIL import Image, ImageDraw, ImageFont
 import cv2
-# import numpy as np
 import json
-import time
 import urllib.request
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+# import numpy as np
+# import time
+
+from brother_ql.devicedependent import models, label_type_specs, label_sizes
+from brother_ql.devicedependent import ENDLESS_LABEL, DIE_CUT_LABEL, ROUND_DIE_CUT_LABEL
+from brother_ql import BrotherQLRaster, create_label
+from brother_ql.backends import backend_factory, guess_backend
 
 
 app = Flask(__name__)
 
 
-def print_label(img_file, model, printer):
+def print_label(img_file, model, printer, label_size):
     """
     Given a image file print the label
     """
-    bashCommand = "brother_ql -m "+model+" -p "+printer+" print -l 50 "+img_file
-    process = subprocess.Popen(
-        bashCommand.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output, error = process.communicate()
 
-    logging.info(output.decode('utf-8'))
-    logging.error(error.decode('utf-8'))
+    qlr = BrotherQLRaster(model)
+
+    create_label(qlr, img_file, label_size)
+
+    selected_backend = guess_backend(printer)
+    BACKEND_CLASS = backend_factory(selected_backend)['backend_class']
+    be = BACKEND_CLASS(printer)
+    be.write(qlr.data)
+    be.dispose()
+    del be
 
 
 def create_photo_label(file):
@@ -89,7 +97,7 @@ def create_txt_label(text):
 
 def read_battery_capacity(tag):
     try:
-        url = 'https://www.labdoo.org/content/tag-one-dooject?id=0000'+tag
+        url = 'https://platform.labdoo.org/content/tag-one-dooject?id=0000'+tag
         html = urlopen(url)
         html_soup = BeautifulSoup(html, 'html.parser')
 
@@ -111,7 +119,7 @@ def read_battery_capacity(tag):
 def read_save_qr_code(tag):
     try:
         qr_add = "https://api.qrserver.com/v1/create-qr-code/?"
-        qr_add = qr_add+"size=180x180&data=http%3A%2F%2Fwww.labdoo.org%2Flaptop%2F0000"
+        qr_add = qr_add+"size=180x180&data=http%3A%2F%2Fplatform.labdoo.org%2Flaptop%2F0000"
         urllib.request.urlretrieve(
             qr_add+tag, "img/qr.png")
     except Exception as e:
@@ -232,6 +240,13 @@ def upload_file():
     inputs = request.form.to_dict()
     no_copies = 1
 
+    with open('config.json', 'r') as myfile:
+        data = myfile.read()
+        data = json.loads(data)
+    model = data['model']
+    printer = data['printer']
+    label_size = data['label-size']
+
     for key in inputs:
 
         # If a single tag is written print single tag
@@ -239,15 +254,11 @@ def upload_file():
             if inputs[key] != "":
                 print("Printing Single Tag: ", inputs[key])
                 img_file = create_txt_label(inputs[key])
-                model = "QL-500"
-                printer = "/dev/usb/lp0"
-                print_label(img_file, model, printer)
-        
+                print_label(img_file, model, printer, label_size)
+
         # If several labdoo tags are passed then print them
         if key == 'tags':
             if inputs[key] != "":
-                model = "QL-500"
-                printer = "/dev/usb/lp0"
                 print("Printing Labdoo Tags: ", inputs[key])
                 labdoo_tags = inputs[key].split(';')
                 for tag in labdoo_tags:
@@ -260,7 +271,7 @@ def upload_file():
 
                     # Print the Labels
                     for img in img_files:
-                        print_label(img, model, printer)
+                        print_label(img_file, model, printer, label_size)
 
         if key == 'copies':
             if inputs[key] != "":
@@ -272,10 +283,8 @@ def upload_file():
 
         uploaded_file.save(uploaded_file.filename)
         img_file = create_photo_label(uploaded_file.filename)
-        model = "QL-500"
-        printer = "/dev/usb/lp0"
         for i in range(0, no_copies):
-            print_label(img_file, model, printer)
+            print_label(img_file, model, printer, label_size)
 
         os.remove(uploaded_file.filename)
 
@@ -284,4 +293,4 @@ def upload_file():
 
 if __name__ == "__main__":
     print("Starting Server")
-    app.run(host='0.0.0.0', port=80, debug=False)
+    app.run(host='0.0.0.0', port=8080, debug=True)
