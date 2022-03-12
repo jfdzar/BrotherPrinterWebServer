@@ -271,7 +271,7 @@ def upload_file():
 
                     # Print the Labels
                     for img in img_files:
-                        print_label(img_file, model, printer, label_size)
+                        print_label(img, model, printer, label_size)
 
         if key == 'copies':
             if inputs[key] != "":
