@@ -17,6 +17,9 @@ from brother_ql.backends import backend_factory, guess_backend
 
 
 app = Flask(__name__)
+font_path = '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf'
+# For Windows
+# font_path = 'C:\Windows\Fonts\Arial.ttf'
 
 
 def print_label(img_file, model, printer, label_size):
@@ -82,7 +85,7 @@ def create_txt_label(text):
             font_size = 35
 
         fnt = ImageFont.truetype(
-            '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', font_size)
+            font_path, font_size)
         d = ImageDraw.Draw(img)
         d.text((10, 10), text, font=fnt, fill=(0, 0, 0))
 
@@ -134,13 +137,13 @@ def create_device_label(tag):
         img = Image.new('RGB', (554, 200), color=(255, 255, 255))
 
         fnt = ImageFont.truetype(
-            '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', 30)
+            font_path, 30)
         d = ImageDraw.Draw(img)
         d.text((10, 70), "Device Tag ID:", font=fnt, fill=(0, 0, 0))
         d.text((10, 105), "000"+tag, font=fnt, fill=(0, 0, 0))
 
         fnt = ImageFont.truetype(
-            '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', 14)
+            font_path, 14)
         d.text((10, 140), "This device has to stay at your property",
                font=fnt, fill=(0, 0, 0))
         d.text((10, 165), "or donations will stop", font=fnt, fill=(0, 0, 0))
@@ -164,7 +167,7 @@ def create_power_adaptor_label(tag):
         img = Image.new('RGB', (554, 200), color=(255, 255, 255))
 
         fnt = ImageFont.truetype(
-            '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', 30)
+            font_path, 30)
         d = ImageDraw.Draw(img)
         d.text((10, 70), "Power Adap.Tag ID:", font=fnt, fill=(0, 0, 0))
         d.text((10, 105), "000"+tag, font=fnt, fill=(0, 0, 0))
@@ -188,13 +191,13 @@ def create_battery_label(tag, bat_cap):
         img = Image.new('RGB', (554, 200), color=(255, 255, 255))
 
         fnt = ImageFont.truetype(
-            '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', 30)
+            font_path, 30)
         d = ImageDraw.Draw(img)
         d.text((10, 70), "Battery Comp. ID:", font=fnt, fill=(0, 0, 0))
         d.text((10, 105), "000"+tag, font=fnt, fill=(0, 0, 0))
 
         fnt = ImageFont.truetype(
-            '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', 20)
+            font_path, 20)
         d.text((10, 140), "Battery Watt-Hours", font=fnt, fill=(0, 0, 0))
         d.text((10, 165), bat_cap, font=fnt, fill=(0, 0, 0))
 

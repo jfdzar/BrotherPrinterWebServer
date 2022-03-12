@@ -102,13 +102,9 @@ python BrotherPrinterWebServer.py
 
 In your Browser navigate to http://localhost:8080/ and the website should appear
 
-
-In Linux you will have to extra add your user to lp group to give access to the printer
-
-```bash
-sudo adduser YOURUSER lp
-```
-
+For Windows extra steps need to be taken
+Download [libusb-win32-devel-filter-1.2.6.0.exe](https://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/1.2.6.0/) from sourceforge and install it.
+After installing, you have to use the "Filter Wizard" to setup a "device filter" for the label printer.
 
 # Usage
 
