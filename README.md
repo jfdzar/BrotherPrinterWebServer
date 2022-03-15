@@ -59,6 +59,13 @@ In Linux you will have to extra add your user to lp group to give access to the 
 sudo adduser YOURUSER lp
 ```
 
+Additionally you main need to install extra dependencies to work with the OpenCV library. It is just used for the image processing of the foto function. You just need to execute following:
+
+```bash
+pip3 install opencv-contrib-python; sudo apt-get install -y libatlas-base-dev libhdf5-dev libhdf5-serial-dev libatlas-base-dev libjasper-dev  libqtgui4  libqt4-test
+```
+
+
 ## Windows
 
 Similar instructions, pay attention to the slash direction / \
