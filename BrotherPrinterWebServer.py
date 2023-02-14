@@ -18,6 +18,7 @@ from brother_ql.backends import backend_factory, guess_backend
 
 app = Flask(__name__)
 font_path = '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf'
+font_path = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 # For Windows
 # font_path = 'C:\Windows\Fonts\Arial.ttf'
 
@@ -29,6 +30,7 @@ def print_label(img_file, model, printer, label_size):
 
     qlr = BrotherQLRaster(model)
 
+    logging.info("Print Label: "+img_file)
     create_label(qlr, img_file, label_size)
 
     selected_backend = guess_backend(printer)
@@ -274,6 +276,7 @@ def upload_file():
 
                     # Print the Labels
                     for img in img_files:
+                        logging.info(img)
                         print_label(img, model, printer, label_size)
 
         if key == 'copies':
@@ -295,5 +298,15 @@ def upload_file():
 
 
 if __name__ == "__main__":
+    
+    logging.basicConfig(
+        format="%(asctime)s: %(message)s",
+        filemode='a',
+        filename='BrotherPrinter.log',
+        level=logging.INFO,
+        datefmt="%d-%m-%y %H:%M:%S")
+
+    logging.info("Starting Program")
+
     print("Starting Server")
     app.run(host='0.0.0.0', port=8080, debug=True)
