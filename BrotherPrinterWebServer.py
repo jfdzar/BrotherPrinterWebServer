@@ -308,5 +308,10 @@ if __name__ == "__main__":
 
     logging.info("Starting Program")
 
+    if (os.path.isfile(font_path)):
+        logging.info("Font file exists - all OK")
+    else:
+        logging.error("Font File DOES NOT EXIST!")
+
     print("Starting Server")
     app.run(host='0.0.0.0', port=8080, debug=True)
