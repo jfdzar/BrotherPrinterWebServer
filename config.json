@@ -1,5 +1,5 @@
 {
     "model": "QL-500",
-    "printer": "/dev/usb/lp0",
+    "printer": "/dev/usb/lp1",
     "label-size": "62"
 }
