@@ -276,8 +276,15 @@ def upload_file():
 
                     # Print the Labels
                     for img in img_files:
-                        logging.info(img)
-                        print_label(img, model, printer, label_size)
+                        if ('device' in img) and ('device_id' in inputs):
+                            logging.info(img)
+                            print_label(img, model, printer, label_size)
+                        elif ('battery' in img) and ('battery' in inputs):
+                            logging.info(img)
+                            print_label(img, model, printer, label_size)
+                        elif ('power' in img) and ('power_adaptor' in inputs):
+                            logging.info(img)
+                            print_label(img, model, printer, label_size)
 
         if key == 'copies':
             if inputs[key] != "":
