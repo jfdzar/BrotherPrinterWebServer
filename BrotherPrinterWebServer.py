@@ -77,14 +77,14 @@ def create_photo_label(file):
     return img_file
 
 
-def create_txt_label(text):
+def create_txt_label(text,font_size):
     try:
         filename = "label.png"
         img = Image.new('RGB', (554, 100), color=(255, 255, 255))
 
-        font_size = 70
-        if len(text) > 13:
-            font_size = 35
+        #font_size = 70
+        #if len(text) > 13:
+        #    font_size = 35
 
         fnt = ImageFont.truetype(
             font_path, font_size)
@@ -258,7 +258,7 @@ def upload_file():
         if key == 'stag':
             if inputs[key] != "":
                 print("Printing Single Tag: ", inputs[key])
-                img_file = create_txt_label(inputs[key])
+                img_file = create_txt_label(inputs[key], int(inputs['stag_fontsize']))
                 print_label(img_file, model, printer, label_size)
 
         # If several labdoo tags are passed then print them
