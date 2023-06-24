@@ -41,7 +41,7 @@ def print_label(img_file, model, printer, label_size):
     del be
 
 
-def create_photo_label(file):
+def create_photo_label(file, rework_photo = False):
     """
     Given the full path a an image
     Resize it and convert it to black and white
@@ -58,21 +58,23 @@ def create_photo_label(file):
     # Resize it to match label length
     img = img.resize((basewidth, hsize), Image.ANTIALIAS)
     img_file = "last_print.jpg"
+    img = img.convert('RGB')
     img.save(img_file)
-    # Convert it to Black and White
-    # img = img.convert('1')
+    # Convert it to RGB
+    
 
-    # reading image
-    img = cv2.imread(img_file)
+    if rework_photo:
+        # reading image
+        img = cv2.imread(img_file)
 
-    # Edges
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray = cv2.medianBlur(gray, 5)
-    edges = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C,
-                                  cv2.THRESH_BINARY, 9, 9)
+        # Edges
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = cv2.medianBlur(gray, 5)
+        edges = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C,
+                                    cv2.THRESH_BINARY, 9, 9)
 
-    cv2.imwrite(img_file, edges)
-    # Save the new image to print file
+        cv2.imwrite(img_file, edges)
+        # Save the new image to print file
 
     return img_file
 
@@ -295,7 +297,8 @@ def upload_file():
     if uploaded_file.filename != '':
 
         uploaded_file.save(uploaded_file.filename)
-        img_file = create_photo_label(uploaded_file.filename)
+        rework_photo = "real_photo" not in inputs
+        img_file = create_photo_label(uploaded_file.filename,rework_photo)
         for i in range(0, no_copies):
             print_label(img_file, model, printer, label_size)
 
