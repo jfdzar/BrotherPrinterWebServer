@@ -31,7 +31,7 @@ def print_label(img_file, model, printer, label_size):
     qlr = BrotherQLRaster(model)
 
     logging.info("Print Label: "+img_file)
-    create_label(qlr, img_file, label_size)
+    create_label(qlr, img_file, label_size, cut=False)
 
     selected_backend = guess_backend(printer)
     BACKEND_CLASS = backend_factory(selected_backend)['backend_class']
